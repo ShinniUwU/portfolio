@@ -69,7 +69,7 @@ const Hero: React.FC<HeroProps> = ({ scrollToAboutMe }) => {
       </div>
     </section>
     <motion.div
-        className="flex justify-center absolute bottom-10 w-full cursor-pointer"
+        className="flex md:justify-center sm:float-left absolute bottom-10 w-full cursor-pointer"
         initial={{ y: -10 }} // Initial position above
         animate={{ y: 10 }} // Animate down
         transition={{
