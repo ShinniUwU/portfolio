@@ -1,38 +1,35 @@
 'use client';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import Hero from './Hero';
 import AboutMe from './AboutMe';
-
-// TODO:
-// make the hero section not let you scroll furher if u scroll a bit and if u scroll a lot it 
-// automatically brings u down to the about me section 
-
+import ProjectShowcase from './ProjectShowcase';
+import SkillsVisualization from './SkillsVisualization';
+import BackgroundCircles from '@/components/backgroundCircles';
 
 export default function Home() {
+  const [showAboutMe, setShowAboutMe] = useState(false);
   const aboutMeRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const skillsRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = () => {
-    setScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToAboutMe = () => {
-    aboutMeRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+    setShowAboutMe(true);
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <>
-      <section id="hero-section">
-        <Hero scrollToAboutMe={scrollToAboutMe} />
+    <main className="relative">
+      <BackgroundCircles isVisible={!showAboutMe} />
+      <Hero scrollToAboutMe={() => scrollToSection(aboutMeRef)} />
+      <section ref={aboutMeRef}>
+        <AboutMe />
       </section>
-      <section id="about-me-section" ref={aboutMeRef}>
-        <AboutMe scrollY={scrollY} />
+      <section ref={projectsRef}>
+        <ProjectShowcase />
       </section>
-    </>
+      <section ref={skillsRef}>
+        <SkillsVisualization />
+      </section>
+    </main>
   );
 }

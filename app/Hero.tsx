@@ -3,10 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FaArrowDown } from "react-icons/fa6";
 
-
 const colors = ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA'];
 const widths = [100, 200, 150, 200, 100];
-
 
 interface HeroProps {
   scrollToAboutMe: () => void; // Define the prop
@@ -15,14 +13,12 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ scrollToAboutMe }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-
   useEffect(() => {
     setIsVisible(true); // Show GitHub PFP on page load
   }, []);
 
   return (
-    <>
-    <section className="flex items-center justify-center h-screen overflow-hidden">
+    <section className="relative flex items-center justify-center h-screen overflow-hidden">
       <div className="flex flex-col items-center relative md:flex-row gap-3">
         <AnimatePresence>
           {isVisible && (
@@ -67,9 +63,8 @@ const Hero: React.FC<HeroProps> = ({ scrollToAboutMe }) => {
           />
         ))}
       </div>
-    </section>
-    <motion.div
-        className="flex md:justify-center sm:float-left absolute bottom-10 w-full cursor-pointer"
+      <motion.div
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 cursor-pointer"
         initial={{ y: -10 }} // Initial position above
         animate={{ y: 10 }} // Animate down
         transition={{
@@ -93,7 +88,7 @@ const Hero: React.FC<HeroProps> = ({ scrollToAboutMe }) => {
           />
         </motion.div>
       </motion.div>
-    </>
+    </section>
   );
 }
 
