@@ -13,12 +13,12 @@ export const siteConfig = {
       href: "#AboutMe",
     },
     {
-      label: "Experiance",
-      href: "/pricing",
+      label: "Projects",
+      href: "/projects",
     },
     {
-      label: "Repos",
-      href: "/blog",
+      label: "Skills",
+      href: "/team",
     },
   ],
   navMenuItems: [
@@ -31,11 +31,11 @@ export const siteConfig = {
       href: "/dashboard",
     },
     {
-      label: "Experiance",
+      label: "Projects",
       href: "/projects",
     },
     {
-      label: "Repos",
+      label: "Skills",
       href: "/team",
     },
   ],
