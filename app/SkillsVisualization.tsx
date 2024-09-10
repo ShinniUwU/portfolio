@@ -1,5 +1,6 @@
 'use client'
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 interface Skill {
   name: string;
@@ -17,10 +18,12 @@ const skills: Skill[] = [
 ];
 
 const SkillsVisualization: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <motion.div
       id="skills"
-      className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-gray-900 to-black text-white"
+      className={`min-h-screen flex flex-col items-center justify-center p-8 ${theme === 'light' ? 'bg-white text-black shadow-lg' : 'bg-gradient-to-b from-gray-900 to-black text-white'}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -33,9 +36,9 @@ const SkillsVisualization: React.FC = () => {
               <span>{skill.name}</span>
               <span>{skill.level}%</span>
             </div>
-            <div className="w-full bg-gray-700 rounded-full h-2.5">
+            <div className={`w-full rounded-full h-2.5 ${theme === 'light' ? 'bg-gray-300' : 'bg-gray-700'}`}>
               <motion.div
-                className="bg-blue-600 h-2.5 rounded-full"
+                className={`h-2.5 rounded-full ${theme === 'light' ? 'bg-blue-500' : 'bg-blue-600'}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${skill.level}%` }}
                 transition={{ duration: 1, delay: index * 0.1 }}
