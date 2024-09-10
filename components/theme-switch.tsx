@@ -65,6 +65,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
               "pt-px",
               "px-0",
               "mx-0",
+              "transition-colors duration-300", // Smooth transition
             ],
             classNames?.wrapper,
           ),

@@ -6,8 +6,9 @@ import AboutMe from './AboutMe';
 import ProjectShowcase from './ProjectShowcase';
 import SkillsVisualization from './SkillsVisualization';
 import BackgroundCircles from '@/components/backgroundCircles';
+import ContactAndResumeSection from './ContactAndResume';
 
-export default function Home() {
+export default function Home() {  
   const [showBackgroundCircles, setShowBackgroundCircles] = useState(true);
   const heroRef = useRef<HTMLDivElement>(null);
   const aboutMeRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,9 @@ export default function Home() {
       </section>
       <section ref={skillsRef} id="skills">
         <SkillsVisualization />
+      </section>
+      <section id="contact-and-resume">
+        <ContactAndResumeSection />
       </section>
     </main>
   );

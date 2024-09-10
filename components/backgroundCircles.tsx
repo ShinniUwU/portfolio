@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 const colors = ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA'];
 
@@ -16,6 +17,7 @@ interface BackgroundCirclesProps {
 
 const BackgroundCircles: React.FC<BackgroundCirclesProps> = ({ isVisible }) => {
   const [circles, setCircles] = useState<Circle[]>([]);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const updateCircles = () => {
@@ -48,9 +50,10 @@ const BackgroundCircles: React.FC<BackgroundCirclesProps> = ({ isVisible }) => {
               filter: 'blur(50px)',
               top: circle.y,
               left: circle.x,
+              opacity: theme === 'light' ? 0.3 : 0.2,
             }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
+            animate={{ opacity: theme === 'light' ? 0.3 : 0.2 }}
             transition={{ ease: 'easeOut', duration: 1 }}
           />
         ))}

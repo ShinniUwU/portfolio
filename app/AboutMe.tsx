@@ -1,11 +1,13 @@
 'use client'
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { FaReact, FaNodeJs, FaGithub, FaJava, FaGitAlt, FaLinux } from 'react-icons/fa';
 import { SiTypescript, SiNextdotjs } from 'react-icons/si';
 
 const AboutMe: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     setIsVisible(true);
@@ -32,7 +34,7 @@ const AboutMe: React.FC = () => {
   return (
     <motion.div
       id="about"
-      className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-gray-900 to-black text-white"
+      className={`min-h-screen flex flex-col items-center justify-center p-8 ${theme === 'light' ? 'bg-white text-black shadow-lg' : 'bg-gradient-to-b from-gray-900 to-black text-white'}`}
       variants={containerVariants}
       initial="hidden"
       animate={isVisible ? "visible" : "hidden"}
@@ -65,7 +67,7 @@ const AboutMe: React.FC = () => {
         href="https://github.com/ShinniUwU"
         target="_blank"
         rel="noopener noreferrer"
-        className="px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-colors"
+        className="px-6 py-3 bg-blue-500 text-white rounded-full font-bold hover:bg-blue-600 transition-colors shadow-md"
         variants={itemVariants}
       >
         Check out my GitHub

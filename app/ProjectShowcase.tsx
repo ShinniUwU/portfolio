@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
 interface Project {
   id: number;
@@ -13,7 +14,7 @@ const projects: Project[] = [
   {
     id: 1,
     title: "NeatFiles",
-    description: "NeatFiles is a command-line utility designed to help you organize your files effortlessly. Whether you’re managing files in a specific directory or your entire current directory, NeatFiles makes it easy to sort and categorize your files into neat, organized folders based on their types and formats. ",
+    description: "NeatFiles is a command-line utility designed to help you organize your files effortlessly. Whether you're managing files in a specific directory or your entire current directory, NeatFiles makes it easy to sort and categorize your files into neat, organized folders based on their types and formats. ",
     repo: "https://github.com/ShinniUwU/NeatFiles"
   },
   {
@@ -32,10 +33,12 @@ const projects: Project[] = [
 ];
 
 const ProjectShowcase: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <motion.div
       id="projects"
-      className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-black to-gray-900 text-white"
+      className={`min-h-screen flex flex-col items-center justify-center p-8 ${theme === 'light' ? 'bg-white text-black shadow-lg' : 'bg-gradient-to-b from-black to-gray-900 text-white'}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -45,7 +48,7 @@ const ProjectShowcase: React.FC = () => {
         {projects.map((project) => (
           <Link href={project.repo} key={project.id} passHref>
             <motion.div
-              className="bg-gray-800 rounded-lg overflow-hidden cursor-pointer flex flex-col h-full"
+              className={`rounded-lg overflow-hidden cursor-pointer flex flex-col h-full ${theme === 'light' ? 'bg-gray-100 shadow-md' : 'bg-gray-800'}`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -56,7 +59,7 @@ const ProjectShowcase: React.FC = () => {
               />
               <div className="p-4 flex flex-col flex-grow">
                 <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                <p className="text-gray-300 flex-grow">{project.description}</p>
+                <p className={`flex-grow ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{project.description}</p>
               </div>
             </motion.div>
           </Link>
