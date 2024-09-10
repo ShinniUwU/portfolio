@@ -18,7 +18,7 @@ export const siteConfig = {
     },
     {
       label: "Skills",
-      href: "/team",
+      href: "/skills",
     },
   ],
   navMenuItems: [
@@ -36,7 +36,7 @@ export const siteConfig = {
     },
     {
       label: "Skills",
-      href: "/team",
+      href: "/skills",
     },
   ],
   links: {

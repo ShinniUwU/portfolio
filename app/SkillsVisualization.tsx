@@ -12,12 +12,14 @@ const skills: Skill[] = [
   { name: "Next.js", level: 80 },
   { name: "Node.js", level: 75 },
   { name: "CSS/Tailwind", level: 85 },
+  { name: "Java", level: 30 },  
   // Add more skills here
 ];
 
 const SkillsVisualization: React.FC = () => {
   return (
     <motion.div
+      id="skills"
       className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-gray-900 to-black text-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

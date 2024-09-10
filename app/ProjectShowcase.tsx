@@ -34,6 +34,7 @@ const projects: Project[] = [
 const ProjectShowcase: React.FC = () => {
   return (
     <motion.div
+      id="projects"
       className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-black to-gray-900 text-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

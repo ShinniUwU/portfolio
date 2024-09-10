@@ -1,7 +1,7 @@
 'use client'
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { FaReact, FaNodeJs, FaGithub } from 'react-icons/fa';
+import { FaReact, FaNodeJs, FaGithub, FaJava, FaGitAlt, FaLinux } from 'react-icons/fa';
 import { SiTypescript, SiNextdotjs } from 'react-icons/si';
 
 const AboutMe: React.FC = () => {
@@ -31,6 +31,7 @@ const AboutMe: React.FC = () => {
 
   return (
     <motion.div
+      id="about"
       className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-b from-gray-900 to-black text-white"
       variants={containerVariants}
       initial="hidden"
@@ -55,6 +56,9 @@ const AboutMe: React.FC = () => {
         <TechIcon Icon={SiNextdotjs} label="Next.js" />
         <TechIcon Icon={FaNodeJs} label="Node.js" />
         <TechIcon Icon={FaGithub} label="GitHub" />
+        <TechIcon Icon={FaJava} label="Java" />
+        <TechIcon Icon={FaGitAlt} label="Git" />
+        <TechIcon Icon={FaLinux} label="Linux Bash" />
       </motion.div>
 
       <motion.a

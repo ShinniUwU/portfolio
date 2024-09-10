@@ -18,7 +18,7 @@ const BackgroundCircles: React.FC<BackgroundCirclesProps> = ({ isVisible }) => {
   const [circles, setCircles] = useState<Circle[]>([]);
 
   useEffect(() => {
-    const updateWindowDimensions = () => {
+    const updateCircles = () => {
       const newCircles = colors.map((color) => ({
         size: Math.random() * 200 + 100,
         x: Math.random() * window.innerWidth,
@@ -28,18 +28,14 @@ const BackgroundCircles: React.FC<BackgroundCirclesProps> = ({ isVisible }) => {
       setCircles(newCircles);
     };
 
-    updateWindowDimensions();
+    updateCircles();
 
-    const handleResize = () => {
-      updateWindowDimensions();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', updateCircles);
+    return () => window.removeEventListener('resize', updateCircles);
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {isVisible &&
         circles.map((circle, index) => (
           <motion.div
