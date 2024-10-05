@@ -56,7 +56,7 @@ export const Navbar = () => {
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {[
             { href: "#hero", label: "Home" },
-            { href: "#about", label: "About" },
+            { href: "#about", label: "About Me" },
             { href: "#skills", label: "Skills" },
             { href: "#projects", label: "Projects" },
           ].map((item) => (

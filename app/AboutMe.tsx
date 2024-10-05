@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { FaReact, FaNodeJs, FaGithub, FaJava, FaGitAlt, FaLinux } from 'react-icons/fa';
+import { FaReact, FaNodeJs, FaGithub, FaGitAlt, FaLinux } from 'react-icons/fa';
 import { SiTypescript, SiNextdotjs } from 'react-icons/si';
 
 const AboutMe: React.FC = () => {
@@ -58,7 +58,6 @@ const AboutMe: React.FC = () => {
         <TechIcon Icon={SiNextdotjs} label="Next.js" />
         <TechIcon Icon={FaNodeJs} label="Node.js" />
         <TechIcon Icon={FaGithub} label="GitHub" />
-        <TechIcon Icon={FaJava} label="Java" />
         <TechIcon Icon={FaGitAlt} label="Git" />
         <TechIcon Icon={FaLinux} label="Linux Bash" />
       </motion.div>
