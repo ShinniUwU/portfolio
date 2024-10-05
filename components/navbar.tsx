@@ -16,10 +16,8 @@ import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-} from "@/components/icons";
+
+import { FaTwitter,FaGithub } from "react-icons/fa";
 
 export const Navbar = () => {
   useEffect(() => {
@@ -90,10 +88,10 @@ export const Navbar = () => {
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
       <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
-            <TwitterIcon className="text-default-500" />
+            <FaTwitter className="text-default-500" />
           </Link>
         <Link isExternal aria-label="Github" href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
+          <FaGithub className="text-default-500" />
         </Link>
         <ThemeSwitch />
         <NavbarMenuToggle />
