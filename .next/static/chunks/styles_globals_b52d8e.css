@@ -1395,14 +1395,6 @@ img, video {
   scroll-padding-bottom: 1.5rem;
 }
 
-.list-inside {
-  list-style-position: inside;
-}
-
-.list-disc {
-  list-style-type: disc;
-}
-
 .list-none {
   list-style-type: none;
 }

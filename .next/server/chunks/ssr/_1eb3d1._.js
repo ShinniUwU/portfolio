@@ -528,7 +528,7 @@ const Navbar = ()=>{
                             },
                             {
                                 href: "#about",
-                                label: "About"
+                                label: "About Me"
                             },
                             {
                                 href: "#skills",

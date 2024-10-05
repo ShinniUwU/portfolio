@@ -3,6 +3,7 @@ import { motion, AnimatePresence, MotionValue } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { FaGithub, FaLinkedin } from "react-icons/fa6";
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 
 interface HeroProps {
   scrollToAboutMe: () => void;
@@ -41,19 +42,19 @@ const Hero: React.FC<HeroProps> = ({ scrollToAboutMe, opacity }) => {
                 Hana Becheva
               </h1>
               <h2 className={`text-xl sm:text-2xl md:text-3xl mb-6 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-                Java, frontend dev, and UI/UX enthusiast
+                Typescript, frontend dev, and UI/UX enthusiast
               </h2>
               <p className={`text-lg sm:text-xl max-w-2xl mx-auto mb-8 ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>
                 Welcome to my portfolio! I craft elegant, efficient web solutions 
                 and bring creative ideas to life through code.
               </p>
               <div className="flex justify-center space-x-4 mb-8">
-                <a href="https://github.com/ShinniUwU" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-500 transition-colors">
+                <Link href="https://github.com/ShinniUwU" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-500 transition-colors">
                   <FaGithub />
-                </a>
-                <a href="https://www.linkedin.com/in/radoslav-borisov-a7062622b/" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-500 transition-colors">
+                </Link>
+                <Link href="https://www.linkedin.com/in/radoslav-borisov-a7062622b/" target="_blank" rel="noopener noreferrer" className="text-2xl hover:text-gray-500 transition-colors">
                   <FaLinkedin />
-                </a>
+                </Link>
               </div>
               <motion.button 
                 onClick={scrollToAboutMe}

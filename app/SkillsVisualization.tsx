@@ -8,12 +8,11 @@ interface Skill {
 }
 
 const skills: Skill[] = [
-  { name: "React", level: 90 },
-  { name: "TypeScript", level: 85 },
+  { name: "React", level: 60 },
+  { name: "TypeScript", level: 50 },
   { name: "Next.js", level: 80 },
-  { name: "Node.js", level: 75 },
+  { name: "Node.js", level: 60 },
   { name: "CSS/Tailwind", level: 85 },
-  { name: "Java", level: 30 },  
   // Add more skills here
 ];
 
