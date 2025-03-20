@@ -1,50 +1,27 @@
-import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
-import clsx from "clsx";
-
-import { Providers } from "./providers";
-
-import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
-import { Navbar } from "@/components/navbar";
+import type { Metadata } from "next"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
+  title: "Hana Becheva | System Administrator & Linux Enthusiast",
+  description: "I'm Hana Becheva, a passionate System Administrator specialized in Linux and open-source technologies. Explore my portfolio, projects, and skills—and let's collaborate!",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/bash.png",
   },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-};
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html suppressHydrationWarning lang="en" className="scroll-smooth">
-      <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-            <Navbar />
-              {children}
-        </Providers>
+    <html lang="en">
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }
