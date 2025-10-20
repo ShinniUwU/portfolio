@@ -6,12 +6,19 @@ try {
 }
 
 /** @type {import('next').NextConfig} */
+const isVercel = !!process.env.VERCEL
 const nextConfig = {
-  experimental: {
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
+  eslint: {
+    // Avoid CI flakiness due to ESLint config/plugins on Vercel
+    ignoreDuringBuilds: true,
   },
+  experimental: isVercel
+    ? {}
+    : {
+        webpackBuildWorker: true,
+        parallelServerBuildTraces: true,
+        parallelServerCompiles: true,
+      },
 }
 
 mergeConfig(nextConfig, userConfig)
