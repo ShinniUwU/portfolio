@@ -226,7 +226,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" suppressHydrationWarning className="relative min-h-screen flex items-center justify-center pt-24">
+      <section id="hero" suppressHydrationWarning className="relative min-h-screen flex items-center justify-center pt-24 pb-12 md:pb-0">
         <Particles className="absolute inset-0 -z-10" />
         <div className="container mx-auto px-4">
           <motion.div
@@ -369,7 +369,7 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden md:block"
           animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
           transition={shouldReduceMotion ? undefined : { repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
         >

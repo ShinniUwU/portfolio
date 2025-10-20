@@ -1278,6 +1278,9 @@ video {
 .pb-10 {
   padding-bottom: 2.5rem;
 }
+.pb-12 {
+  padding-bottom: 3rem;
+}
 .pt-0 {
   padding-top: 0px;
 }
@@ -1838,6 +1841,10 @@ video {
     margin-top: 0px;
   }
 
+  .md\:block {
+    display: block;
+  }
+
   .md\:inline {
     display: inline;
   }
@@ -1873,6 +1880,10 @@ video {
   .md\:px-0 {
     padding-left: 0px;
     padding-right: 0px;
+  }
+
+  .md\:pb-0 {
+    padding-bottom: 0px;
   }
 
   .md\:text-2xl {
