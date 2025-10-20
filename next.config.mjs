@@ -8,6 +8,9 @@ try {
 /** @type {import('next').NextConfig} */
 const isVercel = !!process.env.VERCEL
 const nextConfig = {
+  // Make the site fully static to minimize runtime complexity on Vercel
+  output: 'export',
+  images: { unoptimized: true },
   eslint: {
     // Avoid CI flakiness due to ESLint config/plugins on Vercel
     ignoreDuringBuilds: true,
