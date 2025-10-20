@@ -289,38 +289,7 @@ export default function Home() {
                 </Button>
               </motion.div>
 
-              {/* Stats */}
-              <motion.div
-                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4"
-              >
-                <Card className="glass-card">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">1</div>
-                    <div className="text-sm text-muted-foreground">Server</div>
-                  </CardContent>
-                </Card>
-                <Card className="glass-card">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">5+</div>
-                    <div className="text-sm text-muted-foreground">Distros</div>
-                  </CardContent>
-                </Card>
-                <Card className="glass-card">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">99.9%</div>
-                    <div className="text-sm text-muted-foreground">Uptime</div>
-                  </CardContent>
-                </Card>
-                <Card className="glass-card">
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">24/7</div>
-                    <div className="text-sm text-muted-foreground">Monitoring</div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              {/* Stats removed per request */}
             </div>
 
             {/* Right Column - Avatar & Terminal */}
