@@ -3,10 +3,12 @@
 // Inspired by react-hot-toast library
 import * as React from "react"
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+// Minimal local types to avoid depending on a UI toast implementation
+export type ToastActionElement = React.ReactElement | undefined
+export interface ToastProps {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000

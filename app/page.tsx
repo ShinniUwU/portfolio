@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
+import { motion, useScroll, useTransform, useReducedMotion, useMotionValueEvent } from "framer-motion"
 import {
   ChevronDown,
   Download,
@@ -26,7 +26,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTheme } from "next-themes"
-import Particles from "./components/particles"
+import dynamic from "next/dynamic"
+const Particles = dynamic(() => import("./components/particles"), { ssr: false })
 import CommandPalette from "./components/command-palette"
 import { fontMono } from "@/app/fonts"
 
@@ -36,6 +37,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { scrollYProgress } = useScroll()
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+  const [heroOpacityValue, setHeroOpacityValue] = useState<number>(1)
   const shouldReduceMotion = useReducedMotion()
   const [year, setYear] = useState<number | null>(null)
 
@@ -47,6 +49,15 @@ export default function Home() {
     // Compute dynamic year on client to avoid SSR/client mismatch
     setYear(new Date().getFullYear())
   }, [])
+
+  // Keep a numeric opacity with a safe initial value for first paint
+  useEffect(() => {
+    try { setHeroOpacityValue(heroOpacity.get()) } catch { setHeroOpacityValue(1) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  useMotionValueEvent(heroOpacity, "change", (latest) => {
+    setHeroOpacityValue(latest)
+  })
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -221,7 +232,7 @@ export default function Home() {
           <motion.div
             // Ensure hero is visible immediately; fade controlled only by scroll
             transition={{ duration: 0 }}
-            style={shouldReduceMotion ? undefined : { opacity: heroOpacity }}
+            style={{ opacity: shouldReduceMotion ? 1 : heroOpacityValue }}
             className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
           >
             {/* Left Column - Content */}
