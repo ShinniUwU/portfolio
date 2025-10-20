@@ -20,7 +20,7 @@ interface ProjectStoryProps {
   }
 }
 
-export default function ProjectStory({ title, problem, solution, impact, stack = [], link }: ProjectStoryProps) {
+export default function ProjectStory({ title, problem, solution, impact, stack = [], link, metrics = [], details = {} }: ProjectStoryProps) {
   const [open, setOpen] = useState(false)
   return (
     <>
