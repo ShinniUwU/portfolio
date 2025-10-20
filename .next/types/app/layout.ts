@@ -1,4 +1,4 @@
-// File: /home/shinni/Downloads/portfolio-sys/app/layout.tsx
+// File: /home/shinni/Downloads/portfolio/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

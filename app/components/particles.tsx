@@ -1,12 +1,14 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useReducedMotion } from "framer-motion"
 import Particles from "react-particles"
 import { loadSlim } from "tsparticles-slim"
 import type { Container, Engine } from "tsparticles-engine"
 
 export default function ParticlesComponent({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false)
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     setMounted(true)
@@ -20,7 +22,7 @@ export default function ParticlesComponent({ className }: { className?: string }
     // Container loaded
   }, [])
 
-  if (!mounted) return null
+  if (!mounted || reduceMotion) return null
 
   return (
     <Particles
@@ -100,4 +102,3 @@ export default function ParticlesComponent({ className }: { className?: string }
     />
   )
 }
-
