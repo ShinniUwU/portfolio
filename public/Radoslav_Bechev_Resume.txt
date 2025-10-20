@@ -1,0 +1,35 @@
+RADOSLAV BECHEV
+Customer Support Representative | Systems & Infrastructure Enthusiast
+Sofia, Bulgaria | shinni@tutamail.com | shinni.dev | github.com/ShinniUwU
+
+SUMMARY
+Hands-on Linux tinkerer passionate about automation, networking, and self-hosted infrastructure.
+Runs a personal Proxmox environment hosting Vaultwarden, Jellyfin, Discord bots, and a modded Minecraft server.
+Configures OpenWRT routers, AdGuard DNS filtering, and Tailscale zero-trust networking.
+
+SKILLS
+- Linux System Administration (Arch, Debian)
+- Virtualization (Proxmox, LXC, KVM)
+- Networking & Security (OpenWRT, Cloudflare Tunnels, Tailscale)
+- Bash & System Automation (cron, systemd)
+- Self-hosting & Containers (Docker, reverse proxies)
+- Git & Troubleshooting (Linux + Windows)
+
+WORK EXPERIENCE
+Alorica — Customer Support Representative
+Aug 2024 – Present | Sofia, Bulgaria (On-site)
+  • Provide customer and technical support for software and connectivity issues.
+  • Maintain high-quality communication and accurate documentation.
+
+LunarLabs LLC — Volunteer Software Engineer
+Nov 2024 – Present | Remote
+  • Assisted in internal infrastructure projects and CI setup under NDA.
+
+EDUCATION
+Vanq Voinova 132 SU — Hardware and Software Science
+2019 – 2024 | GPA 5.43
+
+CERTIFICATES
+Programming Fundamentals (2024)
+JS Advanced (2024)
+JS Applications (2025, in progress)
