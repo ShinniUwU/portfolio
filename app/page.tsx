@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useReducedMotion, useMotionValueEvent } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import {
   ChevronDown,
   Download,
@@ -26,8 +26,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useTheme } from "next-themes"
-import dynamic from "next/dynamic"
-const Particles = dynamic(() => import("./components/particles"), { ssr: false })
 import CommandPalette from "./components/command-palette"
 import { fontMono } from "@/app/fonts"
 
@@ -35,9 +33,7 @@ export default function Home() {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { scrollYProgress } = useScroll()
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
-  const [heroOpacityValue, setHeroOpacityValue] = useState<number>(1)
+  const [isSending, setIsSending] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   const [year, setYear] = useState<number | null>(null)
 
@@ -49,15 +45,6 @@ export default function Home() {
     // Compute dynamic year on client to avoid SSR/client mismatch
     setYear(new Date().getFullYear())
   }, [])
-
-  // Keep a numeric opacity with a safe initial value for first paint
-  useEffect(() => {
-    try { setHeroOpacityValue(heroOpacity.get()) } catch { setHeroOpacityValue(1) }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  useMotionValueEvent(heroOpacity, "change", (latest) => {
-    setHeroOpacityValue(latest)
-  })
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -73,7 +60,7 @@ export default function Home() {
       <div className="min-h-screen bg-background text-foreground">
         <CommandPalette />
         {/* Navigation skeleton */}
-        <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               <div className={`text-xl font-bold ${fontMono.className}`}>
@@ -135,7 +122,7 @@ export default function Home() {
       <CommandPalette />
 
       {/* Navigation */}
-      <header suppressHydrationWarning className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
+      <header suppressHydrationWarning className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className={`text-xl font-bold ${fontMono.className}`}>
@@ -186,7 +173,7 @@ export default function Home() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl"
+              className="md:hidden border-t border-border bg-background"
             >
               <nav className="py-4 space-y-2" aria-label="Mobile navigation">
                 <button
@@ -227,12 +214,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <section id="hero" suppressHydrationWarning className="relative min-h-screen flex items-center justify-center pt-24 pb-12 md:pb-0">
-        <Particles className="absolute inset-0 -z-10" />
         <div className="container mx-auto px-4">
           <motion.div
-            // Ensure hero is visible immediately; fade controlled only by scroll
             transition={{ duration: 0 }}
-            style={{ opacity: shouldReduceMotion ? 1 : heroOpacityValue }}
             className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
           >
             {/* Left Column - Content */}
@@ -245,14 +229,14 @@ export default function Home() {
                   className="flex items-center gap-3"
                 >
                   <Terminal className="h-8 w-8 text-primary" />
-                  <span className={`text-lg ${fontMono.className} text-muted-foreground`}>System Administrator</span>
+                  <span className="text-lg font-semibold text-muted-foreground">System Administrator</span>
                 </motion.div>
 
                 <motion.h1
                   initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
                   animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold ${fontMono.className}`}
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold"
                 >
                   <span className="gradient-text">Shinni</span>
                 </motion.h1>
@@ -300,9 +284,9 @@ export default function Home() {
               className="flex flex-col items-center space-y-6"
             >
               <div className="relative">
-                <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-2 border-primary/50 terminal-glow">
+                <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl overflow-hidden border-2 border-primary/50 terminal-glow">
                   <Image
-                    src="/69644134.jpeg"
+                    src="https://avatars.githubusercontent.com/u/69644134?v=4"
                     alt="Shinni avatar"
                     width={192}
                     height={192}
@@ -337,10 +321,8 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <motion.div
+        <div
           className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden md:block"
-          animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-          transition={shouldReduceMotion ? undefined : { repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
         >
           <Button
             variant="ghost"
@@ -351,7 +333,7 @@ export default function Home() {
           >
             <ChevronDown className="h-6 w-6" />
           </Button>
-        </motion.div>
+        </div>
       </section>
 
       {/* About Section */}
@@ -364,7 +346,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${fontMono.className}`}>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="gradient-text">About Me</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -423,7 +405,7 @@ export default function Home() {
                       <ul className="space-y-1 text-sm text-muted-foreground">
                         <li>• Performance monitoring & tuning</li>
                         <li>• Automation & scripting</li>
-                        <li>• Disaster recovery planning</li>
+                        <li>• Disaster recovery</li>
                       </ul>
                     </div>
                   </div>
@@ -531,7 +513,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${fontMono.className}`}>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="gradient-text">Skills & Expertise</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -556,12 +538,12 @@ export default function Home() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Fedora (ThinkPad)</span>
+                      <span className="text-sm">Fedora (Workstation)</span>
                       <Badge variant="secondary" className="text-xs">Primary</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Nobara (Main PC)</span>
-                      <Badge variant="secondary" className="text-xs">Gaming</Badge>
+                      <span className="text-sm">NixOS (ThinkPad)</span>
+                      <Badge variant="secondary" className="text-xs">Testing</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Debian (Server)</span>
@@ -600,16 +582,16 @@ export default function Home() {
                       <Badge variant="secondary" className="text-xs">Minecraft</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">Discord Bots</span>
-                      <Badge variant="secondary" className="text-xs">Python</Badge>
+                      <span className="text-sm">TypeScript Bots</span>
+                      <Badge variant="secondary" className="text-xs">Discord</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Self-Hosted Services</span>
                       <Badge variant="secondary" className="text-xs">Docker</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">ZeroTier Tunneling</span>
-                      <Badge variant="secondary" className="text-xs">VPN</Badge>
+                      <span className="text-sm">Secure Remote Access</span>
+                      <Badge variant="secondary" className="text-xs">WireGuard</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Media Stack</span>
@@ -640,20 +622,20 @@ export default function Home() {
                       <Badge variant="secondary" className="text-xs">Preferred</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">tmux</span>
-                      <Badge variant="secondary" className="text-xs">Sessions</Badge>
+                      <span className="text-sm">Tailscale</span>
+                      <Badge variant="secondary" className="text-xs">Mesh</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">fzf</span>
-                      <Badge variant="secondary" className="text-xs">Fuzzy</Badge>
+                      <span className="text-sm">Proxmox Backup</span>
+                      <Badge variant="secondary" className="text-xs">Backups</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">htop/btop</span>
+                      <span className="text-sm">Grafana</span>
                       <Badge variant="secondary" className="text-xs">Monitor</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm">ncdu</span>
-                      <Badge variant="secondary" className="text-xs">Disk</Badge>
+                      <span className="text-sm">Docker Compose</span>
+                      <Badge variant="secondary" className="text-xs">Containers</Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -718,7 +700,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${fontMono.className}`}>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="gradient-text">Projects</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -733,42 +715,42 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="glass-card h-full group hover:scale-105 transition-transform duration-300">
+              <Card className="glass-card h-full transition-colors">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
                     src="/minecraft.png"
-                    alt="Linux Infrastructure"
+                    alt="Backup fabric"
                     width={400}
                     height={200}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-48 object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Server className="h-5 w-5 text-primary" />
-                    Linux Infrastructure Stack
+                    Proxmox Backup Fabric
                   </CardTitle>
                   <CardDescription>
-                    High-performance server infrastructure with automated deployment
+                    Segmented homelab backups with secure remote access
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Built a robust Linux infrastructure stack featuring automated deployments,
-                    container orchestration, monitoring, and security hardening with 99.9% uptime.
+                    Designed a Proxmox Backup Server workflow with scheduled snapshots, Tailscale-only admin paths,
+                    and IaC-managed restore tests to keep services resilient.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["Debian", "Docker", "systemd", "Monitoring"].map((tag) => (
+                    {["Proxmox", "PBS", "Tailscale", "IaC"].map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                  <div className="pt-2 border-t border-border/50">
+                  <div className="pt-2 border-t border-border">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Status: <span className="text-primary">Production</span></span>
-                      <span>Uptime: 99.9%</span>
+                      <span>Backups: Nightly</span>
                     </div>
                   </div>
                 </CardContent>
@@ -781,42 +763,50 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <Card className="glass-card h-full group hover:scale-105 transition-transform duration-300">
+              <Card className="glass-card h-full transition-colors">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
-                    src="/MCSManager.png"
-                    alt="Automation Scripts"
+                    src="/solen_logo.png"
+                    alt="SOLEN automation framework"
                     width={400}
                     height={200}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-48 object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 </div>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Code className="h-5 w-5 text-primary" />
-                    System Automation Suite
+                    SOLEN
                   </CardTitle>
                   <CardDescription>
-                    Comprehensive automation scripts for Linux system management
+                    Secure, modular server utility framework
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Developed a suite of automation scripts for system monitoring, backup management,
-                    and deployment automation, reducing manual tasks by 80%.
+                    SOLEN is a policy-driven “guardian of the machine” that unifies backups, health checks,
+                    and maintenance into one consistent runner built for secure automation.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["Bash", "Python", "systemd", "Cron"].map((tag) => (
+                    {["TypeScript", "Node", "Backups", "Health checks"].map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                  <div className="pt-2 border-t border-border/50">
+                  <a
+                    href="https://github.com/ShinniUwU/SOLEN"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary underline-offset-4 hover:underline"
+                  >
+                    View repository
+                  </a>
+                  <div className="pt-2 border-t border-border">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Status: <span className="text-primary">Active</span></span>
-                      <span>Scripts: 15+</span>
+                      <span>Runs: Policy-driven</span>
                     </div>
                   </div>
                 </CardContent>
@@ -829,14 +819,14 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <Card className="glass-card h-full group hover:scale-105 transition-transform duration-300">
+              <Card className="glass-card h-full transition-colors">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
-                    src="/dockerkub.webp"
-                    alt="Security Hardening"
+                    src="/grafana_icon.svg"
+                    alt="Telemetry and alerts"
                     width={400}
                     height={200}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-48 object-contain bg-background"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                   <div className="absolute top-2 right-2">
@@ -848,28 +838,28 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Shield className="h-5 w-5 text-primary" />
-                    Security Hardening Framework
+                    Telemetry & Alerting Stack
                   </CardTitle>
                   <CardDescription>
-                    Comprehensive Linux security hardening and monitoring solution
+                    Unified monitoring, logging, and alert routing
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Implemented a complete security hardening framework including firewall configuration,
-                    intrusion detection, log monitoring, and automated security updates.
+                    Deployed a Grafana/Loki/Prometheus stack with alerting rules, service probes,
+                    and hardened endpoints behind Tailscale for noise-free, actionable signals.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["iptables", "fail2ban", "auditd", "SSH"].map((tag) => (
+                    {["Prometheus", "Loki", "Grafana", "Alerting"].map((tag) => (
                       <Badge key={tag} variant="secondary" className="text-xs">
                         {tag}
                       </Badge>
                     ))}
                   </div>
-                  <div className="pt-2 border-t border-border/50">
+                  <div className="pt-2 border-t border-border">
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Status: <span className="text-green-400">Production</span></span>
-                      <span>Security: 100%</span>
+                      <span>Noise: Low</span>
                     </div>
                   </div>
                 </CardContent>
@@ -889,7 +879,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${fontMono.className}`}>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="gradient-text">Get In Touch</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -917,9 +907,9 @@ export default function Home() {
                   <div className="space-y-4">
                     <a
                       href="mailto:shinni@tutamail.com"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border/50 hover:bg-primary/5 transition-colors group"
+                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
                     >
-                      <Mail className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <Mail className="h-5 w-5 text-primary" />
                       <div>
                         <div className="font-medium">Email</div>
                         <div className="text-sm text-muted-foreground">shinni@tutamail.com</div>
@@ -930,9 +920,9 @@ export default function Home() {
                       href="https://github.com/ShinniUwU"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border/50 hover:bg-primary/5 transition-colors group"
+                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
                     >
-                      <Github className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <Github className="h-5 w-5 text-primary" />
                       <div>
                         <div className="font-medium">GitHub</div>
                         <div className="text-sm text-muted-foreground">@ShinniUwU</div>
@@ -943,9 +933,9 @@ export default function Home() {
                       href="https://www.linkedin.com/in/radoslav-borisov-a7062622b/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border/50 hover:bg-primary/5 transition-colors group"
+                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
                     >
-                      <Linkedin className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <Linkedin className="h-5 w-5 text-primary" />
                       <div>
                         <div className="font-medium">LinkedIn</div>
                         <div className="text-sm text-muted-foreground">Radoslav Bechev</div>
@@ -956,9 +946,9 @@ export default function Home() {
                       href="https://shinni.dev"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border/50 hover:bg-primary/5 transition-colors group"
+                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
                     >
-                      <Globe className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <Globe className="h-5 w-5 text-primary" />
                       <div>
                         <div className="font-medium">Website</div>
                         <div className="text-sm text-muted-foreground">shinni.dev</div>
@@ -1018,14 +1008,17 @@ export default function Home() {
                 <CardContent>
                   <form onSubmit={(e) => {
                     e.preventDefault()
+                    if (isSending) return
                     const form = e.currentTarget
                     const name = (form.elements.namedItem("name") as HTMLInputElement).value
                     const email = (form.elements.namedItem("email") as HTMLInputElement).value
                     const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value
 
+                    setIsSending(true)
                     window.location.href = `mailto:shinni@tutamail.com?subject=${encodeURIComponent(
                       "New Contact from " + name,
                     )}&body=${encodeURIComponent("Email: " + email + "\n\n" + message)}`
+                    setTimeout(() => setIsSending(false), 1200)
                   }} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -1062,9 +1055,9 @@ export default function Home() {
                         placeholder="Tell me about your project or how I can help..."
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSending}>
                       <Mail className="mr-2 h-4 w-4" />
-                      Send Message
+                      {isSending ? "Preparing email..." : "Send Message"}
                     </Button>
                   </form>
                 </CardContent>
@@ -1075,11 +1068,11 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-border/50 bg-muted/10">
+      <footer className="py-12 border-t border-border bg-muted/10">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className={`text-lg font-bold mb-4 ${fontMono.className}`}>
+              <h3 className="text-lg font-bold mb-4">
                 <span className="gradient-text">shinni</span>@portfolio
               </h3>
               <p className="text-sm text-muted-foreground">
@@ -1126,7 +1119,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="pt-8 border-t border-border/50">
+          <div className="pt-8 border-t border-border">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-muted-foreground">
                 © {year ?? ''} Shinni. All rights reserved.

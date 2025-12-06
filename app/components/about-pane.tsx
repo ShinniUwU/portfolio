@@ -47,7 +47,7 @@ fav: Arch • current: Debian Sid
           <pre className={`${fontMono.className} text-xs md:text-sm whitespace-pre-wrap leading-6 bg-background/60 p-4 rounded-md border border-border`}>{`
 # favorite vs. reality
 FAV_SHELL=fish     # but I run zsh now for compatibility
-FAV_DISTRO=arch    # currently on debian sid for practicality
+FAV_DISTRO=arch    # currently on fedora (ws) + nixos (testing)
 `}</pre>
         </CardContent>
       </Card>
@@ -72,7 +72,7 @@ FAV_DISTRO=arch    # currently on debian sid for practicality
         <TerminalBlock title="Observability" lines={[
           "$ journalctl -fu <svc> -> live logs",
           "$ btop/htop -> resource watch",
-          "$ ncdu/du -> disk sanity",
+          "$ df -h -> disk sanity",
         ]} />
       </div>
 
