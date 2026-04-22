@@ -718,7 +718,7 @@ export default function Home() {
               <Card className="glass-card h-full transition-colors">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
-                    src="/minecraft.png"
+                    src="/minecraft.webp"
                     alt="Backup fabric"
                     width={400}
                     height={200}
@@ -766,7 +766,7 @@ export default function Home() {
               <Card className="glass-card h-full transition-colors">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <Image
-                    src="/solen_logo.png"
+                    src="/solen_logo.webp"
                     alt="SOLEN automation framework"
                     width={400}
                     height={200}
