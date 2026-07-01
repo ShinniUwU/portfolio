@@ -19,7 +19,9 @@ import {
   Zap,
   Globe,
   Menu,
-  X
+  X,
+  Briefcase,
+  GraduationCap
 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -36,6 +38,7 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   const [year, setYear] = useState<number | null>(null)
+  const uniStarted = new Date() >= new Date(2026, 8, 1) // Fontys HBO-ICT start, Sept 2026
 
   useEffect(() => {
     setMounted(true)
@@ -75,6 +78,9 @@ export default function Home() {
                 </a>
                 <a href="#skills" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
                   Skills
+                </a>
+                <a href="#experience" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
+                  Experience
                 </a>
                 <a href="#projects" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
                   Projects
@@ -138,6 +144,9 @@ export default function Home() {
               <button onClick={() => scrollToSection('skills')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
                 Skills
               </button>
+              <button onClick={() => scrollToSection('experience')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
+                Experience
+              </button>
               <button onClick={() => scrollToSection('projects')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
                 Projects
               </button>
@@ -193,6 +202,12 @@ export default function Home() {
                   className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
                 >
                   Skills
+                </button>
+                <button
+                  onClick={() => scrollToSection('experience')}
+                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
+                >
+                  Experience
                 </button>
                 <button
                   onClick={() => scrollToSection('projects')}
@@ -690,6 +705,132 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Experience & Education Section */}
+      <section id="experience" className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="gradient-text">Experience & Education</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Support today, infrastructure next — the path and what's driving it
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Experience */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <Card className="glass-card h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <Briefcase className="h-6 w-6 text-primary" />
+                    Experience
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="border-l-2 border-primary pl-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h4 className="font-semibold">LunarLabs — Volunteer Software Engineer</h4>
+                      <Badge variant="secondary" className="text-xs">Infra & CI</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Nov 2024 – Present | Remote</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Contributing to internal infrastructure and CI setup for a small dev team —
+                      hands-on with the tooling I want to work with full-time.
+                    </p>
+                  </div>
+
+                  <div className="border-l-2 border-border pl-4 opacity-70">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h4 className="font-semibold">Alorica — Customer Support Representative</h4>
+                      <Badge variant="outline" className="text-xs">Day job</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Aug 2025 – Jun 2026 | Sofia, Bulgaria (On-site)</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Included for a complete work history — not the direction I'm building toward.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Education */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <Card className="glass-card h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                    Education
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="border-l-2 border-primary pl-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h4 className="font-semibold">Fontys University of Applied Sciences</h4>
+                      <Badge variant="secondary" className={`text-xs ${uniStarted ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-green-500/20 text-green-400 border-green-500/30"}`}>
+                        {uniStarted ? "Current" : "Incoming"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">HBO-ICT & Infrastructure</p>
+                    <p className="text-xs text-muted-foreground">Sept 2026 – Aug 2030 | Eindhoven, Netherlands</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {uniStarted
+                        ? "Studying HBO-ICT & Infrastructure in the Netherlands, building on the homelab background."
+                        : "Relocating to the Netherlands to formalize the infrastructure background I've built hands-on in the homelab, with a full degree program."}
+                    </p>
+                  </div>
+
+                  <div className="border-l-2 border-border pl-4 opacity-70">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h4 className="font-semibold">Vanya Voynova 132 SU</h4>
+                      <Badge variant="outline" className="text-xs">Completed</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Hardware and Software Science</p>
+                    <p className="text-xs text-muted-foreground">2019 – 2024 | GPA 5.43</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            viewport={{ once: true }}
+            className="mt-8"
+          >
+            <div className="code-block max-w-3xl mx-auto">
+              <div className="flex items-center gap-2">
+                <span className="text-primary">$</span>
+                <span className="text-foreground">echo $CAREER_PATH</span>
+              </div>
+              <div className="text-muted-foreground ml-4 mt-2">
+                {uniStarted
+                  ? "Customer support was the start. Now studying HBO-ICT & Infrastructure at Fontys, headed toward systems administration."
+                  : "Customer support today. Systems administration next. Fontys starts September 2026."}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Projects Section */}
       <section id="projects" className="py-20 bg-muted/20">
         <div className="container mx-auto px-4">
@@ -1084,6 +1225,7 @@ export default function Home() {
               <div className="space-y-2">
                 <button onClick={() => scrollToSection('about')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">About</button>
                 <button onClick={() => scrollToSection('skills')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Skills</button>
+                <button onClick={() => scrollToSection('experience')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Experience</button>
                 <button onClick={() => scrollToSection('projects')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Projects</button>
                 <button onClick={() => scrollToSection('contact')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Contact</button>
               </div>
