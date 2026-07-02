@@ -3,6 +3,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { fontSans } from "@/app/fonts"
 import Script from "next/script"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://shinni.dev"),
@@ -53,6 +54,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <main id="main" suppressHydrationWarning>{children}</main>
         </ThemeProvider>
+        <SpeedInsights />
         <Script id="schema-person" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({
             "@context": "https://schema.org",
