@@ -42,6 +42,18 @@ export default function Home() {
   const [year, setYear] = useState<number | null>(null)
   const uniStarted = new Date() >= new Date(2026, 8, 1) // Fontys HBO-ICT start, Sept 2026
 
+  // next-themes resolves the real theme synchronously on the client (from
+  // localStorage) but the server always renders as if unset, so the
+  // Sun/Moon icon below needs to stay server-consistent until after mount.
+  const [themeIconMounted, setThemeIconMounted] = useState(false)
+
+  useEffect(() => {
+    // Standard mount-detection idiom: flips only after client hydration
+    // completes, so the icon starts server-consistent and updates after.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setThemeIconMounted(true)
+  }, [])
+
   useEffect(() => {
     // Reads the visitor's clock so the footer year stays correct between
     // static-export builds, not just at build time.
@@ -96,7 +108,11 @@ export default function Home() {
                 aria-label="Toggle theme"
                 className="hover:bg-primary/10"
               >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                {themeIconMounted && theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
               </Button>
               <Button
                 variant="ghost"
