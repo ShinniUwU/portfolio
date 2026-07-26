@@ -23,9 +23,6 @@ export const metadata: Metadata = {
       "Linux-focused system administrator specializing in performance, uptime, and secure automation.",
     url: "https://shinni.dev",
     siteName: "Shinni",
-    images: [
-      { url: "/bash.png", width: 512, height: 512, alt: "Shinni logo" },
-    ],
     locale: "en_US",
     type: "website",
   },
@@ -34,7 +31,6 @@ export const metadata: Metadata = {
     title: "Shinni | System Administrator",
     description:
       "Linux-focused system administrator specializing in performance, uptime, and secure automation.",
-    images: ["/bash.png"],
   },
 }
 
@@ -63,6 +59,9 @@ export default function RootLayout({
             "@type": "Person",
             name: "Shinni",
             url: "https://shinni.dev",
+            email: "shinni@tutamail.com",
+            description:
+              "Linux-focused system administrator specializing in performance, uptime, and secure automation.",
             sameAs: [
               "https://github.com/ShinniUwU",
               "https://www.linkedin.com/in/radoslav-borisov-a7062622b/",

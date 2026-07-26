@@ -33,16 +33,11 @@ import { fontMono } from "@/app/fonts"
 
 export default function Home() {
   const { setTheme, theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   const [year, setYear] = useState<number | null>(null)
   const uniStarted = new Date() >= new Date(2026, 8, 1) // Fontys HBO-ICT start, Sept 2026
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   useEffect(() => {
     // Compute dynamic year on client to avoid SSR/client mismatch
@@ -55,72 +50,6 @@ export default function Home() {
       element.scrollIntoView({ behavior: 'smooth' })
     }
     setMobileMenuOpen(false)
-  }
-
-  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <CommandPalette />
-        {/* Navigation skeleton */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <div className={`text-xl font-bold ${fontMono.className}`}>
-                <span className="gradient-text">shinni</span>@portfolio
-              </div>
-              <nav className="hidden md:flex space-x-8" aria-label="Primary">
-                <a href="#hero" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  Home
-                </a>
-                <a href="#about" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  About
-                </a>
-                <a href="#skills" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  Skills
-                </a>
-                <a href="#experience" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  Experience
-                </a>
-                <a href="#projects" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  Projects
-                </a>
-                <a href="#contact" className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                  Contact
-                </a>
-              </nav>
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Toggle theme"
-                  className="hover:bg-primary/10"
-                >
-                  <Moon className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden hover:bg-primary/10"
-                  aria-label="Toggle mobile menu"
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-        {/* Loading skeleton */}
-        <div className="min-h-screen flex items-center justify-center pt-24">
-          <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-8 w-32 bg-muted rounded mx-auto mb-4"></div>
-              <div className="h-4 w-48 bg-muted rounded mx-auto"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -254,6 +183,7 @@ export default function Home() {
                   className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold"
                 >
                   <span className="gradient-text">Shinni</span>
+                  <span className="sr-only"> - Linux System Administrator</span>
                 </motion.h1>
 
                 <motion.p
