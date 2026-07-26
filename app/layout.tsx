@@ -11,9 +11,7 @@ export const metadata: Metadata = {
   title: "Shinni | System Administrator & Linux Enthusiast",
   description:
     "Linux-focused system administrator specializing in performance, uptime, and secure automation. Explore projects, skills, and get in touch.",
-  icons: {
-    icon: "/bash.png",
-  },
+  manifest: "/manifest.webmanifest",
   alternates: {
     canonical: "/",
   },

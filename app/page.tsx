@@ -4,7 +4,9 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import {
+  Check,
   ChevronDown,
+  Copy,
   Download,
   Github,
   Linkedin,
@@ -35,12 +37,15 @@ export default function Home() {
   const { setTheme, theme } = useTheme()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isSending, setIsSending] = useState(false)
+  const [emailCopied, setEmailCopied] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   const [year, setYear] = useState<number | null>(null)
   const uniStarted = new Date() >= new Date(2026, 8, 1) // Fontys HBO-ICT start, Sept 2026
 
   useEffect(() => {
-    // Compute dynamic year on client to avoid SSR/client mismatch
+    // Reads the visitor's clock so the footer year stays correct between
+    // static-export builds, not just at build time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setYear(new Date().getFullYear())
   }, [])
 
@@ -222,12 +227,7 @@ export default function Home() {
             </div>
 
             {/* Right Column - Avatar & Terminal */}
-            <motion.div
-              initial={shouldReduceMotion ? undefined : { opacity: 0, x: 20 }}
-              animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col items-center space-y-6"
-            >
+            <div className="flex flex-col items-center space-y-6">
               <div className="relative">
                 <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl overflow-hidden border-2 border-primary/50 terminal-glow">
                   <Image
@@ -235,6 +235,7 @@ export default function Home() {
                     alt="Shinni avatar"
                     width={192}
                     height={192}
+                    priority
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -262,7 +263,7 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
@@ -317,12 +318,12 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground leading-relaxed">
-                    I'm a system administrator with a deep love for Linux and open-source technologies.
+                    I&apos;m a system administrator with a deep love for Linux and open-source technologies.
                     I jumped straight into Arch—no regrets—and now focus on performance, troubleshooting,
                     and system stability.
                   </p>
                   <p className="text-muted-foreground leading-relaxed">
-                    When I'm not managing servers or troubleshooting issues, I'm exploring new Linux distributions,
+                    When I&apos;m not managing servers or troubleshooting issues, I&apos;m exploring new Linux distributions,
                     contributing to open-source projects, and continuously expanding my knowledge in system administration.
                   </p>
                 </CardContent>
@@ -649,7 +650,7 @@ export default function Home() {
               <span className="gradient-text">Experience & Education</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Support today, infrastructure next — the path and what's driving it
+              Support today, infrastructure next — the path and what&apos;s driving it
             </p>
           </motion.div>
 
@@ -688,7 +689,7 @@ export default function Home() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">Aug 2025 – Jun 2026 | Sofia, Bulgaria (On-site)</p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Included for a complete work history — not the direction I'm building toward.
+                      Included for a complete work history — not the direction I&apos;m building toward.
                     </p>
                   </div>
                 </CardContent>
@@ -954,7 +955,7 @@ export default function Home() {
               <span className="gradient-text">Get In Touch</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ready to discuss your infrastructure needs? Let's connect!
+              Ready to discuss your infrastructure needs? Let&apos;s connect!
             </p>
           </motion.div>
 
@@ -976,16 +977,34 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
-                    <a
-                      href="mailto:shinni@tutamail.com"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
-                    >
-                      <Mail className="h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium">Email</div>
-                        <div className="text-sm text-muted-foreground">shinni@tutamail.com</div>
-                      </div>
-                    </a>
+                    <div className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group">
+                      <a
+                        href="mailto:shinni@tutamail.com"
+                        className="flex items-center gap-3 flex-1 min-w-0"
+                      >
+                        <Mail className="h-5 w-5 text-primary shrink-0" />
+                        <div>
+                          <div className="font-medium">Email</div>
+                          <div className="text-sm text-muted-foreground">shinni@tutamail.com</div>
+                        </div>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText("shinni@tutamail.com")
+                          setEmailCopied(true)
+                          setTimeout(() => setEmailCopied(false), 2000)
+                        }}
+                        aria-label="Copy email address"
+                        className="shrink-0 p-2 rounded-md hover:bg-primary/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        {emailCopied ? (
+                          <Check className="h-4 w-4 text-primary" />
+                        ) : (
+                          <Copy className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </button>
+                    </div>
 
                     <a
                       href="https://github.com/ShinniUwU"
@@ -1048,7 +1067,7 @@ export default function Home() {
                       </div>
                       <div className="flex items-center gap-2 mt-4">
                         <span className="text-primary">$</span>
-                        <span className="text-foreground">echo "Available for remote work"</span>
+                        <span className="text-foreground">echo &quot;Available for remote work&quot;</span>
                       </div>
                       <div className="text-muted-foreground ml-4">
                         Working from anywhere with stable internet
@@ -1073,7 +1092,7 @@ export default function Home() {
                     Send a Message
                   </CardTitle>
                   <CardDescription>
-                    Drop me a line and I'll get back to you as soon as possible
+                    Drop me a line and I&apos;ll get back to you as soon as possible
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
