@@ -224,9 +224,9 @@ export default function Home() {
                 className="flex flex-wrap gap-4"
               >
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <a href="/Radoslav_Bechev_Resume.txt" download>
+                  <a href="/Radoslav_Bechev_CV.pdf" download>
                     <Download className="mr-2 h-4 w-4" />
-                    Download Resume
+                    Download CV
                   </a>
                 </Button>
                 <Button
@@ -804,15 +804,8 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <Card className="glass-card h-full transition-colors">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <Image
-                    src="/minecraft.webp"
-                    alt="Backup fabric"
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <div className="relative overflow-hidden rounded-t-lg h-48 flex items-center justify-center bg-gradient-to-br from-primary/20 to-muted/40">
+                  <Server className="h-16 w-16 text-primary/60" />
                 </div>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
