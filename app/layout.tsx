@@ -1,7 +1,7 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { fontSans } from "@/app/fonts"
+import "./site.css"
+import { fontSans, fontMono } from "@/app/fonts"
 import Script from "next/script"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
@@ -32,37 +32,38 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: "#2b2622",
+  colorScheme: "dark",
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={fontSans.className}>
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] bg-primary text-primary-foreground px-3 py-2 rounded-md"
-        >
+    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`}>
+      <body>
+        <a href="#main" className="skip">
           Skip to content
         </a>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <main id="main" suppressHydrationWarning>{children}</main>
-        </ThemeProvider>
+        <main id="main">{children}</main>
         <SpeedInsights />
         <Analytics />
         <Script id="schema-person" type="application/ld+json" strategy="afterInteractive">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
-            name: "Shinni",
+            name: "Hana Becheva",
+            alternateName: "Shinni",
             url: "https://shinni.dev",
             email: "shinni@tutamail.com",
             description:
               "Linux-focused system administrator specializing in performance, uptime, and secure automation.",
             sameAs: [
               "https://github.com/ShinniUwU",
-              "https://www.linkedin.com/in/radoslav-borisov-a7062622b/",
+              "https://www.linkedin.com/in/hana-becheva-a7062622b/",
             ],
             jobTitle: "System Administrator",
           })}

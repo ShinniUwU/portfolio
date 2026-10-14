@@ -1,1236 +1,275 @@
-"use client"
-
-import type React from "react"
-import { useState, useEffect } from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import {
-  Check,
-  ChevronDown,
-  Copy,
-  Download,
-  Github,
-  Linkedin,
-  Mail,
-  Moon,
-  Sun,
-  Terminal,
-  Server,
-  Code,
-  Database,
-  Shield,
-  Zap,
-  Globe,
-  Menu,
-  X,
-  Briefcase,
-  GraduationCap
-} from "lucide-react"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { useTheme } from "next-themes"
+import BootHero from "./components/boot-hero"
 import CommandPalette from "./components/command-palette"
-import { fontMono } from "@/app/fonts"
+import HomelabMap from "./components/homelab-map"
+import CopyEmail from "./components/copy-email"
+import WorkLedger from "./components/work-ledger"
+import Year from "./components/year"
+
+const EMAIL = "shinni@tutamail.com"
+const GITHUB = "https://github.com/ShinniUwU"
+const LINKEDIN = "https://www.linkedin.com/in/hana-becheva-a7062622b/"
+
+type Row = { name: string; note?: string; value: string; now?: boolean }
+type Pic = { src: string; alt: string; caption: string }
+
+const RECORD: { group: string; rows: Row[]; pic?: Pic }[] = [
+  {
+    group: "Experience",
+    pic: { src: "/img/sofia.jpg", alt: "A house on a tree-lined street in Sofia", caption: "Sofia, where it started" },
+    rows: [
+      {
+        name: "LunarLabs, volunteer software engineer",
+        note: "Internal infrastructure and CI for a small dev team, remote. The tooling I want to work with full time.",
+        value: "Nov 2024 to now",
+        now: true,
+      },
+      {
+        name: "Alorica, customer support",
+        note: "Sofia, on site. Here for a complete work history, not the direction I am building toward.",
+        value: "Aug 2025 to Jun 2026",
+      },
+    ],
+  },
+  {
+    group: "Education",
+    pic: { src: "/img/eindhoven.jpg", alt: "The arrivals entrance of Eindhoven Airport", caption: "Eindhoven, where I study" },
+    rows: [
+      {
+        name: "Fontys University of Applied Sciences",
+        note: "HBO-ICT & Infrastructure in Eindhoven, building on the homelab background.",
+        value: "Sep 2026 to Aug 2030",
+        now: true,
+      },
+      {
+        name: "Vanya Voynova 132 SU",
+        note: "Hardware and Software Science, GPA 5.43.",
+        value: "2019 to 2024",
+      },
+    ],
+  },
+  {
+    group: "Systems",
+    rows: [
+      { name: "Fedora", value: "Workstation", now: true },
+      { name: "Debian", value: "Server" },
+      { name: "NixOS", value: "ThinkPad, testing" },
+      { name: "Arch Linux", value: "Expert" },
+      { name: "Ubuntu", value: "Familiar" },
+    ],
+  },
+  {
+    group: "Services",
+    rows: [
+      { name: "Game servers", value: "Minecraft" },
+      { name: "TypeScript bots", value: "Discord" },
+      { name: "Self-hosted services", value: "Docker" },
+      { name: "Secure remote access", value: "WireGuard" },
+      { name: "Media stack", value: "Jellyfin" },
+    ],
+  },
+  {
+    group: "Tools",
+    rows: [
+      { name: "Fish shell", value: "Preferred" },
+      { name: "Tailscale", value: "Mesh" },
+      { name: "Proxmox Backup", value: "Backups" },
+      { name: "Beszel", value: "Server metrics" },
+      { name: "Uptime Kuma", value: "Uptime checks" },
+      { name: "ntfy", value: "Alerts" },
+      { name: "Docker Compose", value: "Containers" },
+    ],
+  },
+]
+
+function RecordGroup({ g }: { g: (typeof RECORD)[number] }) {
+  return (
+    <div className={`group${g.pic ? " group--pic" : ""}`}>
+      {g.pic && (
+        <figure className="place rise d2">
+          <Image src={g.pic.src} alt={g.pic.alt} width={480} height={480} />
+          <figcaption>{g.pic.caption}</figcaption>
+        </figure>
+      )}
+      <h3 className="rise">{g.group}</h3>
+      <ul>
+        {g.rows.map((r) => (
+          <li key={r.name} className="rise d1">
+            <span className={`dot${r.now ? " dot--now" : ""}`} aria-hidden="true" />
+            <span className="rrow__name">
+              {r.name}
+              {r.note && <span className="rrow__note">{r.note}</span>}
+            </span>
+            <span className="rrow__val">{r.value}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 export default function Home() {
-  const { setTheme, theme } = useTheme()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isSending, setIsSending] = useState(false)
-  const [emailCopied, setEmailCopied] = useState(false)
-  const shouldReduceMotion = useReducedMotion()
-  const [year, setYear] = useState<number | null>(null)
-  const uniStarted = new Date() >= new Date(2026, 8, 1) // Fontys HBO-ICT start, Sept 2026
-
-  // next-themes resolves the real theme synchronously on the client (from
-  // localStorage) but the server always renders as if unset, so the
-  // Sun/Moon icon below needs to stay server-consistent until after mount.
-  const [themeIconMounted, setThemeIconMounted] = useState(false)
-
-  useEffect(() => {
-    // Standard mount-detection idiom: flips only after client hydration
-    // completes, so the icon starts server-consistent and updates after.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setThemeIconMounted(true)
-  }, [])
-
-  useEffect(() => {
-    // Reads the visitor's clock so the footer year stays correct between
-    // static-export builds, not just at build time.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setYear(new Date().getFullYear())
-  }, [])
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-    setMobileMenuOpen(false)
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="site">
       <CommandPalette />
 
-      {/* Navigation */}
-      <header suppressHydrationWarning className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className={`text-xl font-bold ${fontMono.className}`}>
-              <span className="gradient-text">shinni</span>@portfolio
-            </div>
-            <nav className="hidden md:flex space-x-8" aria-label="Primary">
-              <button onClick={() => scrollToSection('hero')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                Home
-              </button>
-              <button onClick={() => scrollToSection('about')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                About
-              </button>
-              <button onClick={() => scrollToSection('skills')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                Skills
-              </button>
-              <button onClick={() => scrollToSection('experience')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                Experience
-              </button>
-              <button onClick={() => scrollToSection('projects')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                Projects
-              </button>
-              <button onClick={() => scrollToSection('contact')} className="text-sm hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
-                Contact
-              </button>
-            </nav>
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                aria-label="Toggle theme"
-                className="hover:bg-primary/10"
-              >
-                {themeIconMounted && theme === "dark" ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden hover:bg-primary/10"
-                aria-label="Toggle mobile menu"
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-border bg-background"
-            >
-              <nav className="py-4 space-y-2" aria-label="Mobile navigation">
-                <button
-                  onClick={() => scrollToSection('hero')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => scrollToSection('about')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  About
-                </button>
-                <button
-                  onClick={() => scrollToSection('skills')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  Skills
-                </button>
-                <button
-                  onClick={() => scrollToSection('experience')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  Experience
-                </button>
-                <button
-                  onClick={() => scrollToSection('projects')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  Projects
-                </button>
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className="block w-full text-left px-4 py-2 text-sm hover:text-primary hover:bg-primary/10 transition-colors rounded-sm"
-                >
-                  Contact
-                </button>
-              </nav>
-            </motion.div>
-          )}
-        </div>
+      <header className="bar">
+        <a href="#top" className="bar__mark" translate="no">
+          shinni<span aria-hidden="true">@portfolio</span>
+        </a>
+        <nav aria-label="Primary">
+          <a href="#lab">Lab</a>
+          <a href="#work">Projects</a>
+          <a href="#record">Background</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </nav>
       </header>
 
-      {/* Hero Section */}
-      <section id="hero" suppressHydrationWarning className="relative min-h-screen flex items-center justify-center pt-24 pb-12 md:pb-0">
-        <div className="container mx-auto px-4">
-          <motion.div
-            transition={{ duration: 0 }}
-            className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center"
-          >
-            {/* Left Column - Content */}
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <motion.div
-                  initial={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="flex items-center gap-3"
-                >
-                  <Terminal className="h-8 w-8 text-primary" />
-                  <span className="text-lg font-semibold text-muted-foreground">System Administrator</span>
-                </motion.div>
+      <BootHero />
 
-                <motion.h1
-                  initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold"
-                >
-                  <span className="gradient-text">Shinni</span>
-                  <span className="sr-only"> - Linux System Administrator</span>
-                </motion.h1>
-
-                <motion.p
-                  initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-lg sm:text-xl md:text-2xl text-muted-foreground leading-relaxed"
-                >
-                  Linux sysadmin focused on <span className="text-primary font-semibold">performance</span>, <span className="text-primary font-semibold">uptime</span>, and <span className="text-primary font-semibold">secure automation</span>
-                </motion.p>
-              </div>
-
-              <motion.div
-                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="flex flex-wrap gap-4"
-              >
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <a href="/Radoslav_Bechev_CV.pdf" download>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download CV
-                  </a>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => scrollToSection('contact')}
-                  className="border-primary/50 hover:bg-primary/10"
-                >
-                  Contact Me
-                </Button>
-              </motion.div>
-
-              {/* Stats removed per request */}
-            </div>
-
-            {/* Right Column - Avatar & Terminal */}
-            <div className="flex flex-col items-center space-y-6">
-              <div className="relative">
-                <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl overflow-hidden border-2 border-primary/50 terminal-glow">
-                  <Image
-                    src="https://avatars.githubusercontent.com/u/69644134?v=4"
-                    alt="Shinni avatar"
-                    width={192}
-                    height={192}
-                    priority
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <Terminal className="h-4 w-4 text-primary-foreground" />
-                </div>
-              </div>
-
-              <Card className="glass-card w-full max-w-md">
-                <CardContent className="p-4">
-                  <div className={`${fontMono.className} text-sm space-y-2`}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-primary">$</span>
-                      <span className="text-foreground">whoami</span>
-                    </div>
-                    <div className="text-muted-foreground ml-4">shinni</div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-primary">$</span>
-                      <span className="text-foreground">cat /etc/motd</span>
-                    </div>
-                    <div className="text-muted-foreground ml-4">
-                      Messing with Linux until it just works.<br />
-                      Then breaking it again...
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </motion.div>
-        </div>
-
-        <div
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden md:block"
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => scrollToSection('about')}
-            aria-label="Scroll down"
-            className="hover:bg-primary/10"
-          >
-            <ChevronDown className="h-6 w-6" />
-          </Button>
+      <section className="intro" id="intro" aria-label="Summary">
+        <p className="intro__lead rise">
+          Linux sysadmin in the making. At home I run what a small company would: restore-tested backups, private
+          admin access, and alerts that stay quiet until something is really wrong.
+        </p>
+        <div className="intro__cols">
+          <p className="rise d1">
+            <b>Who I am.</b> Hana Becheva, known online as Shinni. I jumped straight into Arch and never regretted
+            it. Today it is Fedora on the workstation, Debian on the server and NixOS on the ThinkPad as a testing
+            ground.
+          </p>
+          <p className="rise d2">
+            <b>What I do.</b> Server hardening, containers with Docker Compose, performance tuning, scripting in Bash
+            and Fish, and disaster recovery. My own tool, SOLEN, rolls backups and health checks into one runner.
+          </p>
+          <p className="rise d3">
+            <b>Where I am.</b> I live in Heerlen, Netherlands, and study at Fontys in Eindhoven from September 2026 to
+            August 2030. My earlier work and school were in Sofia, Bulgaria. Remote work is fine.
+          </p>
+          <p className="rise d4">
+            <b>How to reach me.</b> Email is fastest at {EMAIL}. My code lives on GitHub as ShinniUwU, and the full
+            history is on LinkedIn and in the CV.
+          </p>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">About Me</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Linux enthusiast with a passion for making systems work efficiently and reliably
-            </p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column - Story */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Server className="h-6 w-6 text-primary" />
-                    My Journey
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    I&apos;m a system administrator with a deep love for Linux and open-source technologies.
-                    I jumped straight into Arch—no regrets—and now focus on performance, troubleshooting,
-                    and system stability.
-                  </p>
-                  <p className="text-muted-foreground leading-relaxed">
-                    When I&apos;m not managing servers or troubleshooting issues, I&apos;m exploring new Linux distributions,
-                    contributing to open-source projects, and continuously expanding my knowledge in system administration.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Zap className="h-6 w-6 text-primary" />
-                    What I Do
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Infrastructure</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Server hardening & configuration</li>
-                        <li>• Container orchestration</li>
-                        <li>• Network security & firewalls</li>
-                      </ul>
-                    </div>
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Operations</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Performance monitoring & tuning</li>
-                        <li>• Automation & scripting</li>
-                        <li>• Disaster recovery</li>
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Right Column - Skills & Preferences */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Terminal className="h-6 w-6 text-primary" />
-                    Terminal Preferences
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="code-block">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-primary">$</span>
-                        <span className="text-foreground">cat /etc/favorites</span>
-                      </div>
-                      <div className="text-muted-foreground ml-4 space-y-1">
-                        <div>Shell: <span className="text-primary">fish</span> (preferred) • <span className="text-primary">zsh</span> (daily)</div>
-                        <div>Distro: <span className="text-primary">Arch</span> (fav) • <span className="text-primary">Debian Sid</span> (current)</div>
-                        <div>Editor: <span className="text-primary">VS Code</span> • <span className="text-primary">Neovim</span> • <span className="text-primary">Nano</span></div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Shield className="h-6 w-6 text-primary" />
-                    Key Strengths
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="font-semibold">Linux Expertise</h4>
-                        <p className="text-sm text-muted-foreground">Fedora, Arch, Debian, Ubuntu - from desktop to server</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="font-semibold">System Optimization</h4>
-                        <p className="text-sm text-muted-foreground">Performance tuning, kernel optimization, resource management</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <div>
-                        <h4 className="font-semibold">Automation & Scripting</h4>
-                        <p className="text-sm text-muted-foreground">Bash, Fish, systemd, container orchestration</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Code className="h-6 w-6 text-primary" />
-                    Current Focus
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="code-block">
-                    <div className="flex items-center gap-2">
-                      <span className="text-primary">$</span>
-                      <span className="text-foreground">echo $CURRENT_FOCUS</span>
-                    </div>
-                    <div className="text-muted-foreground ml-4 mt-2">
-                      Expanding knowledge in containerization and infrastructure as code
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+      <section className="labsec" id="lab" aria-label="The homelab">
+        <div className="labsec__head">
+          <h2 className="rise">The lab</h2>
+          <p className="rise d1">
+            One Proxmox host at home runs everything on this map. Flip the switch to see what only my own devices can
+            reach, and tap any part for how it is set up.
+          </p>
+        </div>
+        <div className="rise d2">
+          <HomelabMap />
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="py-20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">Skills & Expertise</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Technical skills and tools I use to build and maintain robust systems
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Terminal className="h-6 w-6 text-primary" />
-                    Operating Systems
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Fedora (Workstation)</span>
-                      <Badge variant="secondary" className="text-xs">Primary</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">NixOS (ThinkPad)</span>
-                      <Badge variant="secondary" className="text-xs">Testing</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Debian (Server)</span>
-                      <Badge variant="secondary" className="text-xs">Production</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Arch Linux</span>
-                      <Badge variant="secondary" className="text-xs">Expert</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Ubuntu</span>
-                      <Badge variant="secondary" className="text-xs">Familiar</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Server className="h-6 w-6 text-primary" />
-                    Server Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Game Servers</span>
-                      <Badge variant="secondary" className="text-xs">Minecraft</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">TypeScript Bots</span>
-                      <Badge variant="secondary" className="text-xs">Discord</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Self-Hosted Services</span>
-                      <Badge variant="secondary" className="text-xs">Docker</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Secure Remote Access</span>
-                      <Badge variant="secondary" className="text-xs">WireGuard</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Media Stack</span>
-                      <Badge variant="secondary" className="text-xs">Jellyfin</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Code className="h-6 w-6 text-primary" />
-                    Tools & Technologies
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Fish Shell</span>
-                      <Badge variant="secondary" className="text-xs">Preferred</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Tailscale</span>
-                      <Badge variant="secondary" className="text-xs">Mesh</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Proxmox Backup</span>
-                      <Badge variant="secondary" className="text-xs">Backups</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Grafana</span>
-                      <Badge variant="secondary" className="text-xs">Monitor</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Docker Compose</span>
-                      <Badge variant="secondary" className="text-xs">Containers</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* Technical Proficiencies */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Database className="h-6 w-6 text-primary" />
-                  Technical Proficiencies
-                </CardTitle>
-                <CardDescription>
-                  Core competencies and areas of expertise
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    "Linux Administration",
-                    "Server Optimization",
-                    "Troubleshooting",
-                    "Network Configuration",
-                    "Monitoring Tools",
-                    "Performance Tuning",
-                    "User Management",
-                    "Service Configuration",
-                    "Firewall Setup",
-                    "Package Management",
-                    "Container Orchestration",
-                    "Infrastructure as Code",
-                    "System Hardening",
-                    "Backup & Recovery",
-                    "Security Auditing"
-                  ].map((skill) => (
-                    <Badge key={skill} variant="outline" className="text-sm py-2 px-3 hover:bg-primary/10 transition-colors">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+      <section className="work" id="work">
+        <div className="col">
+          <h2 className="rise">Projects</h2>
+        </div>
+        <div className="col col--wide rise d1">
+          <WorkLedger />
         </div>
       </section>
 
-      {/* Experience & Education Section */}
-      <section id="experience" className="py-20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">Experience & Education</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Support today, infrastructure next — the path and what&apos;s driving it
-            </p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            {/* Experience */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Briefcase className="h-6 w-6 text-primary" />
-                    Experience
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="border-l-2 border-primary pl-4">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h4 className="font-semibold">LunarLabs — Volunteer Software Engineer</h4>
-                      <Badge variant="secondary" className="text-xs">Infra & CI</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Nov 2024 – Present | Remote</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Contributing to internal infrastructure and CI setup for a small dev team —
-                      hands-on with the tooling I want to work with full-time.
-                    </p>
-                  </div>
-
-                  <div className="border-l-2 border-border pl-4 opacity-70">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h4 className="font-semibold">Alorica — Customer Support Representative</h4>
-                      <Badge variant="outline" className="text-xs">Day job</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Aug 2025 – Jun 2026 | Sofia, Bulgaria (On-site)</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Included for a complete work history — not the direction I&apos;m building toward.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Education */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <GraduationCap className="h-6 w-6 text-primary" />
-                    Education
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="border-l-2 border-primary pl-4">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h4 className="font-semibold">Fontys University of Applied Sciences</h4>
-                      <Badge variant="secondary" className={`text-xs ${uniStarted ? "bg-blue-500/20 text-blue-400 border-blue-500/30" : "bg-green-500/20 text-green-400 border-green-500/30"}`}>
-                        {uniStarted ? "Current" : "Incoming"}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">HBO-ICT & Infrastructure</p>
-                    <p className="text-xs text-muted-foreground">Sept 2026 – Aug 2030 | Eindhoven, Netherlands</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {uniStarted
-                        ? "Studying HBO-ICT & Infrastructure in the Netherlands, building on the homelab background."
-                        : "Relocating to the Netherlands to formalize the infrastructure background I've built hands-on in the homelab, with a full degree program."}
-                    </p>
-                  </div>
-
-                  <div className="border-l-2 border-border pl-4 opacity-70">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h4 className="font-semibold">Vanya Voynova 132 SU</h4>
-                      <Badge variant="outline" className="text-xs">Completed</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Hardware and Software Science</p>
-                    <p className="text-xs text-muted-foreground">2019 – 2024 | GPA 5.43</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            viewport={{ once: true }}
-            className="mt-8"
-          >
-            <div className="code-block max-w-3xl mx-auto">
-              <div className="flex items-center gap-2">
-                <span className="text-primary">$</span>
-                <span className="text-foreground">echo $CAREER_PATH</span>
-              </div>
-              <div className="text-muted-foreground ml-4 mt-2">
-                {uniStarted
-                  ? "Customer support was the start. Now studying HBO-ICT & Infrastructure at Fontys, headed toward systems administration."
-                  : "Customer support today. Systems administration next. Fontys starts September 2026."}
-              </div>
-            </div>
-          </motion.div>
+      <section className="record" id="record">
+        <div className="col">
+          <h2 className="rise">Background</h2>
+          {RECORD.slice(0, 2).map((g) => (
+            <RecordGroup key={g.group} g={g} />
+          ))}
+        </div>
+        <div className="col col--wide stack">
+          {RECORD.slice(2).map((g) => (
+            <RecordGroup key={g.group} g={g} />
+          ))}
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="py-20 bg-muted/20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">Projects</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Real-world infrastructure projects and automation solutions
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full transition-colors">
-                <div className="relative overflow-hidden rounded-t-lg h-48 flex items-center justify-center bg-gradient-to-br from-primary/20 to-muted/40">
-                  <Server className="h-16 w-16 text-primary/60" />
-                </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Server className="h-5 w-5 text-primary" />
-                    Proxmox Backup Fabric
-                  </CardTitle>
-                  <CardDescription>
-                    Segmented homelab backups with secure remote access
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Designed a Proxmox Backup Server workflow with scheduled snapshots, Tailscale-only admin paths,
-                    and IaC-managed restore tests to keep services resilient.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {["Proxmox", "PBS", "Tailscale", "IaC"].map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="pt-2 border-t border-border">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Status: <span className="text-primary">Production</span></span>
-                      <span>Backups: Nightly</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full transition-colors">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <Image
-                    src="/solen_logo.webp"
-                    alt="SOLEN automation framework"
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Code className="h-5 w-5 text-primary" />
-                    SOLEN
-                  </CardTitle>
-                  <CardDescription>
-                    Secure, modular server utility framework
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    SOLEN is a policy-driven “guardian of the machine” that unifies backups, health checks,
-                    and maintenance into one consistent runner built for secure automation.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {["TypeScript", "Node", "Backups", "Health checks"].map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <a
-                    href="https://github.com/ShinniUwU/SOLEN"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-primary underline-offset-4 hover:underline"
-                  >
-                    View repository
-                  </a>
-                  <div className="pt-2 border-t border-border">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Status: <span className="text-primary">Active</span></span>
-                      <span>Runs: Policy-driven</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card h-full transition-colors">
-                <div className="relative overflow-hidden rounded-t-lg">
-                  <Image
-                    src="/grafana_icon.svg"
-                    alt="Telemetry and alerts"
-                    width={400}
-                    height={200}
-                    className="w-full h-48 object-contain bg-background"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
-                      Completed
-                    </Badge>
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-primary" />
-                    Telemetry & Alerting Stack
-                  </CardTitle>
-                  <CardDescription>
-                    Unified monitoring, logging, and alert routing
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Deployed a Grafana/Loki/Prometheus stack with alerting rules, service probes,
-                    and hardened endpoints behind Tailscale for noise-free, actionable signals.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {["Prometheus", "Loki", "Grafana", "Alerting"].map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="pt-2 border-t border-border">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Status: <span className="text-green-400">Production</span></span>
-                      <span>Noise: Low</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+      <section className="about" id="about" aria-label="About">
+        <div className="letter">
+          <Image className="letter__face rise" src="/img/avatar.jpg" alt="Shinni" width={44} height={44} />
+          <p className="rise d1">
+            I am a system administrator with a deep love for Linux and open source. I jumped straight into Arch, no
+            regrets, and these days I focus on performance, troubleshooting and system stability.
+          </p>
+          <p className="rise d2">
+            Customer support was my start and infrastructure is where I am heading. The homelab is how I get there:
+            backups that get restored on purpose, admin panels reachable only over a private network, and alerts tuned
+            until a notification means something.
+          </p>
+          <p className="rise d3">
+            When I am not on a server I am trying new distributions, contributing where I can, and learning
+            containerisation and infrastructure as code. Mostly,{" "}
+            <mark>I mess with Linux until it just works.</mark> Then I break it again.
+          </p>
+          <p className="letter__sign rise d4">
+            <span className="letter__name">Shinni</span>
+            <span className="letter__role">Linux system administrator</span>
+          </p>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">Get In Touch</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ready to discuss your infrastructure needs? Let&apos;s connect!
-            </p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Mail className="h-6 w-6 text-primary" />
-                    Contact Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group">
-                      <a
-                        href="mailto:shinni@tutamail.com"
-                        className="flex items-center gap-3 flex-1 min-w-0"
-                      >
-                        <Mail className="h-5 w-5 text-primary shrink-0" />
-                        <div>
-                          <div className="font-medium">Email</div>
-                          <div className="text-sm text-muted-foreground">shinni@tutamail.com</div>
-                        </div>
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText("shinni@tutamail.com")
-                          setEmailCopied(true)
-                          setTimeout(() => setEmailCopied(false), 2000)
-                        }}
-                        aria-label="Copy email address"
-                        className="shrink-0 p-2 rounded-md hover:bg-primary/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                      >
-                        {emailCopied ? (
-                          <Check className="h-4 w-4 text-primary" />
-                        ) : (
-                          <Copy className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </button>
-                    </div>
-
-                    <a
-                      href="https://github.com/ShinniUwU"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
-                    >
-                      <Github className="h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium">GitHub</div>
-                        <div className="text-sm text-muted-foreground">@ShinniUwU</div>
-                      </div>
-                    </a>
-
-                    <a
-                      href="https://www.linkedin.com/in/radoslav-borisov-a7062622b/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
-                    >
-                      <Linkedin className="h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium">LinkedIn</div>
-                        <div className="text-sm text-muted-foreground">Radoslav Bechev</div>
-                      </div>
-                    </a>
-
-                    <a
-                      href="https://shinni.dev"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-primary/5 transition-colors group"
-                    >
-                      <Globe className="h-5 w-5 text-primary" />
-                      <div>
-                        <div className="font-medium">Website</div>
-                        <div className="text-sm text-muted-foreground">shinni.dev</div>
-                      </div>
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Terminal className="h-6 w-6 text-primary" />
-                    Quick Contact
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="code-block">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-primary">$</span>
-                        <span className="text-foreground">curl -X POST shinni@tutamail.com</span>
-                      </div>
-                      <div className="text-muted-foreground ml-4">
-                        Ready to discuss your infrastructure needs
-                      </div>
-                      <div className="flex items-center gap-2 mt-4">
-                        <span className="text-primary">$</span>
-                        <span className="text-foreground">echo &quot;Available for remote work&quot;</span>
-                      </div>
-                      <div className="text-muted-foreground ml-4">
-                        Working from anywhere with stable internet
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Mail className="h-6 w-6 text-primary" />
-                    Send a Message
-                  </CardTitle>
-                  <CardDescription>
-                    Drop me a line and I&apos;ll get back to you as soon as possible
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={(e) => {
-                    e.preventDefault()
-                    if (isSending) return
-                    const form = e.currentTarget
-                    const name = (form.elements.namedItem("name") as HTMLInputElement).value
-                    const email = (form.elements.namedItem("email") as HTMLInputElement).value
-                    const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value
-
-                    setIsSending(true)
-                    window.location.href = `mailto:shinni@tutamail.com?subject=${encodeURIComponent(
-                      "New Contact from " + name,
-                    )}&body=${encodeURIComponent("Email: " + email + "\n\n" + message)}`
-                    setTimeout(() => setIsSending(false), 1200)
-                  }} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="name" className="text-sm font-medium">Name</label>
-                        <input
-                          id="name"
-                          name="name"
-                          type="text"
-                          required
-                          className="w-full px-3 py-2 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
-                          placeholder="Your name"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">Email</label>
-                        <input
-                          id="email"
-                          name="email"
-                          type="email"
-                          required
-                          className="w-full px-3 py-2 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
-                          placeholder="your@email.com"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="message" className="text-sm font-medium">Message</label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        rows={6}
-                        required
-                        className="w-full px-3 py-2 bg-background/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent resize-none"
-                        placeholder="Tell me about your project or how I can help..."
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSending}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      {isSending ? "Preparing email..." : "Send Message"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 border-t border-border bg-muted/10">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-lg font-bold mb-4">
-                <span className="gradient-text">shinni</span>@portfolio
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Linux system administrator focused on performance, uptime, and secure automation.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <div className="space-y-2">
-                <button onClick={() => scrollToSection('about')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">About</button>
-                <button onClick={() => scrollToSection('skills')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Skills</button>
-                <button onClick={() => scrollToSection('experience')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Experience</button>
-                <button onClick={() => scrollToSection('projects')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Projects</button>
-                <button onClick={() => scrollToSection('contact')} className="block text-sm text-muted-foreground hover:text-primary transition-colors text-left">Contact</button>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Connect</h4>
-              <div className="flex gap-4">
-                <a
-                  href="https://github.com/ShinniUwU"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                  aria-label="GitHub"
-                >
-                  <Github className="h-5 w-5" />
+      <section className="dark" id="contact">
+        <div className="contact">
+          <p className="contact__lead rise">
+            Got an infrastructure problem, an open role or a homelab question? Write to me.
+          </p>
+          <figure className="contact__pic rise d1">
+            <Image src="/img/avatar.jpg" alt="Shinni" width={160} height={160} />
+            <figcaption>Shinni</figcaption>
+          </figure>
+          <div className="contact__links rise d2">
+            <p className="contact__ask">Where do you want to start?</p>
+            <ul>
+              <li>
+                <a href={`mailto:${EMAIL}`}>{EMAIL}</a> <CopyEmail />
+              </li>
+              <li>
+                <a href={GITHUB} target="_blank" rel="noopener noreferrer">
+                  GitHub, ShinniUwU
                 </a>
-                <a
-                  href="https://www.linkedin.com/in/radoslav-borisov-a7062622b/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-5 w-5" />
+              </li>
+              <li>
+                <a href={LINKEDIN} target="_blank" rel="noopener noreferrer">
+                  LinkedIn, Hana Becheva
                 </a>
-                <a
-                  href="mailto:shinni@tutamail.com"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                  aria-label="Email"
-                >
-                  <Mail className="h-5 w-5" />
-                </a>
-              </div>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-border">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-sm text-muted-foreground">
-                © {year ?? ''} Shinni. All rights reserved.
-              </p>
-              <p className="text-sm text-muted-foreground mt-2 md:mt-0">
-                Built with Next.js, Tailwind CSS, and Framer Motion
-              </p>
-            </div>
+              </li>
+            </ul>
+            <p className="contact__note">Based in Heerlen, studying in Eindhoven. Available for remote work.</p>
           </div>
         </div>
-      </footer>
+
+        <p className="credits">
+          Photos via Wikimedia Commons: Sofia by Todor Bozhinov and Eindhoven Airport by CoolmenNL (both CC BY-SA 3.0). 3D model:{" "}
+          <a href="https://sketchfab.com/3d-models/lenovo-thinkpad-laptop-c46575a1769040159db80dd60b727f7c" target="_blank" rel="noopener noreferrer">
+            Lenovo ThinkPad Laptop
+          </a>{" "}
+          by masanimations (CC BY 4.0) via Sketchfab.
+        </p>
+
+        <footer className="foot">
+          <span>Linux system administrator</span>
+          <nav aria-label="Footer">
+            <a href={GITHUB} target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+            <a href="/Hana_Becheva_CV.pdf" download>
+              CV
+            </a>
+          </nav>
+          <span className="foot__end">
+            © <Year /> Shinni
+          </span>
+        </footer>
+      </section>
     </div>
   )
 }

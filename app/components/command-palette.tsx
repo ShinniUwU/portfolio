@@ -44,10 +44,11 @@ export default function CommandPalette() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Navigate">
-          <CommandItem onSelect={() => goTo("hero")}>Home</CommandItem>
+          <CommandItem onSelect={() => goTo("top")}>Home</CommandItem>
+          <CommandItem onSelect={() => goTo("lab")}>Lab</CommandItem>
+          <CommandItem onSelect={() => goTo("work")}>Projects</CommandItem>
+          <CommandItem onSelect={() => goTo("record")}>Background</CommandItem>
           <CommandItem onSelect={() => goTo("about")}>About</CommandItem>
-          <CommandItem onSelect={() => goTo("skills")}>Skills</CommandItem>
-          <CommandItem onSelect={() => goTo("projects")}>Projects</CommandItem>
           <CommandItem onSelect={() => goTo("contact")}>Contact</CommandItem>
         </CommandGroup>
         <CommandSeparator />
@@ -59,4 +60,3 @@ export default function CommandPalette() {
     </CommandDialog>
   )
 }
-

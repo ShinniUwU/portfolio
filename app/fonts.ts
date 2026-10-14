@@ -1,4 +1,15 @@
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google"
+import { Inter, DM_Mono } from "next/font/google"
 
-export const fontSans = Space_Grotesk({ subsets: ["latin"], weight: ["400","500","600","700"] })
-export const fontMono = JetBrains_Mono({ subsets: ["latin"], weight: ["400","500","700"] })
+export const fontSans = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-sans",
+  display: "swap",
+})
+
+export const fontMono = DM_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+})
